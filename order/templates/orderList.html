@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+
+<div class="row mx-1 my-3">
+    <div class="col-md-12 bg-warning">
+            <div class="card-header text-center text-dark h3 py-3">سفارشات {{ shop.name }}
+            </div>
+            <div class="table-responsive">
+                <table class="align-middle mb-0 table table-borderless table-striped table-hover bg-warning text-dark text-center">
+                    <thead>
+                                <div class="row my-3 mx-1">
+                                    <form method="get" action="">
+                                        <div class="col-md-6 col-sm-12 col-xl-4 mb-3 ">
+                                            <b>
+                                                از تاریخ: {{ filter.form.start_date }}
+                                            </b>
+                                        </div>
+                                        <div class="col-md-6 col-sm-12 col-xl-4 mb-3">
+                                            <b>
+                                                تا تاریخ : {{ filter.form.end_date }}
+                                            </b>
+                                        </div>
+                                        <div class="col-md-6 col-sm-12 col-xl-3 mb-3">
+                                            <b>
+                                                وضعیت: {{ filter.form.status }}
+                                            </b>
+                                        </div>
+                                        <div class="col-md-6 col-sm-12 col-xl-1 mb-3">
+                                            <input class="btn btn-primary btn-sm" type="submit" value='جست و جو'>
+                                        </div>
+
+                                    </form>
+                                </div>
+                        </tr>
+                        <hr>
+
+                        <tr>
+                            <th class="text-center">مشتری</th>
+                            <th class="text-center">قیمت نهایی</th>
+                            <th class="text-center">مجموع تعداد ها</th>
+                            <th class="text-center">تخفیف</th>
+                            <th class="text-center">ایجاد شده در</th>
+                            <th class="text-center">بروز شده در</th>
+                            <th class="text-center">پرداخت شده</th>
+                            <th class="text-center">وضعیت</th>
+                            <th class="text-center">بیشتر</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        {% for order in filter.qs %}
+                        <tr>
+                            <td>
+                                <div class="widget-content p-0">
+                                    <div class="widget-content-wrapper">
+                                        <div class="widget-content-left mr-3">
+                                            <div class="widget-content-left">
+                                                <img width="40" height="40" class="rounded-circle"
+                                                    src="{{ order.client.image.url }}" alt="">
+                                            </div>
+                                        </div>
+                                        <div class="widget-content-left flex2">
+                                            <div class="widget-heading">
+                                                {{ order.client.username }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="text-center">{{ order.total_price }}</td>
+                            <td class="text-center">{{ order.total_quantity }}</td>
+                            <td class="text-center">{{ order.discount }}</td>
+                            <td class="text-center">{{ order.created_at.date }}</td>
+                            <td class="text-center">{{ order.updated_at }}</td>
+                            <td class="text-center">
+                                {% if order.is_payment %}
+                                <div class="text-success w-75"><i class="fa fa-check"></i>
+                                </div>
+                                {% else %}
+                                <div class="text-danger w-75"><i class="fa fa-times"> </i>
+                                </div>
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+
+
+
+                                {% if order.status == 'CO' %}
+                                <a href="{% url 'order_status_url' slug=shop.slug pk=order.id %}"
+                                    class="btn btn-success w-100" onclick="setAttr(this)">تایید شده</a>
+
+            </div>
+            {% elif order.status == 'CH' %}
+            <a href="{% url 'order_status_url' slug=shop.slug pk=order.id %}" class="btn btn-secondary w-100"
+                onclick="setAttr(this)"> در حال بررسی </a>
+
+        {% else %}
+        <a href="{% url 'order_status_url' slug=shop.slug pk=order.id %}" class="btn btn-danger w-100"
+            onclick="setAttr(this)">لغو شده</a>
+
+    </div>
+    {% endif %}
+    </td>
+    <td class="text-center">
+        <a href="{% url 'order_detail_url' slug=shop.slug id=order.id %}" type="button" id="PopoverCustomT-1"
+            class="btn btn-dark text-warning btn-sm">بیشتر</a>
+    </td>
+    </tr>
+    {% endfor %}
+
+    </tbody>
+    </table>
+</div>
+<div class="d-block text-center card-footer">
+
+
+
+
+{% endblock content %}

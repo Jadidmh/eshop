@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+
+<div class="row mx-1 my-3">
+    <div class="col-md-12 bg-warning">
+            <div class="card-header text-center text-dark h3 py-3">محصولات فروشگاه {{ shop.name }}
+
+            </div>
+            <div class="table-responsive">
+                <table class="align-middle mb-0 table table-borderless table-striped table-hover bg-warning text-dark text-center mb-3">
+                    <thead>
+                        <tr>
+                            <th>نام محصول</th>
+                            <th class="text-center">تعداد موجودی</th>
+                            <th class="text-center">قیمت</th>
+                            <th class="text-center">تخفیف</th>
+                            <th class="text-center">به روز شده در</th>
+                            <th class="text-center">تایید شده است</th>
+                            <th class="text-center">وضعیت</th>
+                            <th class="text-center">ویرایش</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        {% for product in product_list %}
+                        <tr>
+                            <td>
+                                <div class="widget-content p-0">
+                                    <div class="widget-content-wrapper">
+                                        <div class="widget-content-left mr-3">
+                                            <div class="widget-content-left py-3">
+                                                <img width="50" height="50" class="" src="{{ product.image.url }}" alt="">
+                                            </div>
+                                        </div>
+                                        <div class="widget-content-left flex2">
+                                            <div class="widget-heading pb-3">نام محصول : {{ product.name }}</div>
+                                            <div class="widget-subheading opacity-7 pb-3">
+                                                از دسته بندی : {{ product.category }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="text-center">{{ product.stock }}</td>
+                            <td class="text-center">{{ product.price }}</td>
+                            <td class="text-center">{{ product.discount }}</td>
+                            <td class="text-center">{{ product.updated_at }}</td>
+                            <td class="text-center">
+                                {% if product.is_active %}
+                                <div class="text-success w-75"><i class="fa fa-check"></i>
+                                </div>
+                                {% else %}
+                                <div class="text-danger w-75"><i class="fa fa-times"> </i>
+                                </div>
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+                                {%if product.is_confirmed %}
+                                <div class="text-success w-100">
+                                    <class="text-success w-75"><i class="fa fa-check"></i>
+                                </div>
+                                {% else %}
+                                <div class="text-warning w-100">
+                                    <div class="text-danger w-75"><i class="fa fa-times"> </i>
+                                </div>
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+                                <a href="{% url 'editProduct' product.slug %}" id="PopoverCustomT-1"
+                                    class="btn btn-dark text-warning btn-sm">ویرایش</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+
+                    </tbody>
+                </table>
+            </div>
+            <div class="d-block text-center card-footer">
+                <a href="{% url 'createProduct' slug=shop.slug %}" class="btn-wide btn btn-outline-success">Add
+                    New</a>
+            </div>
+    </div>
+</div>
+
+
+
+{% endblock content %}

@@ -1,0 +1,391 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+
+
+<div class="tab-content">
+    <div class="tab-pane tabs-animation fade show active" id="tab-content-0" role="tabpanel">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="main-card mb-3 card">
+                    <div class="card-body bg-warning">
+                        <h5 class="card-title">قیمت کل خرید مشتری</h5>
+                        <canvas id="polarChart"></canvas>
+                    </div>
+                </div>
+                <div class="main-card mb-3 card">
+                    <div class="card-body bg-warning">
+                        <h5 class="card-title">مجموع سفارشات مجموع تعداد</h5>
+                        <canvas id="radarChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="main-card mb-3 card">
+                    <div class="card-body bg-warning">
+                        <h5 class="card-title">تعداد کل خرید مشتری</h5>
+                        <canvas id="doughnutChart"></canvas>
+                    </div>
+                </div>
+                <div class="main-card mb-3 card">
+                    <div class="card-body bg-warning">
+                        <h5 class="card-title">سفارش کل مشتری</h5>
+                        <canvas id="pieChart" data-url="{% url 'order_chart_url' slug=shop.slug %}"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="tab-pane tabs-animation fade" id="tab-content-1" role="tabpanel">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="main-card mb-3 card">
+                    <div class="card-body">
+                        <h5 class="card-title ">Orders Per Month</h5>
+                        <canvas id="HbarChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="main-card mb-3 card">
+                    <div class="card-body">
+                        <h5 class="card-title">Orders Per Year</h5>
+                        <canvas id="HVbarChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="main-card mb-3 card">
+                    <div class="card-body">
+                        <h5 class="card-title">Orders Per Day</h5>
+                        <canvas id="barChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"
+    integrity="sha256-Uv9BNBucvCPipKQ2NS9wYpJmi8DTOEfTA/nH2aoJALw=" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.css"
+    integrity="sha256-aa0xaJgmK/X74WM224KMQeNQC2xYKwlAt08oZqjeF0E=" crossorigin="anonymous" />
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+
+
+<script>
+    // jquery function
+    $(document).ready(function () {
+        var ctx = document.getElementById('polarChart').getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'polarArea',
+            data: {
+                labels: [{% for label in chart_data %}'{{label.customer__username}}',{% endfor %}],
+        datasets: [{
+            label: 'Total purchase of customers',
+            data: [{% for data in chart_data %}{{data.purchase_price}},{% endfor %}], 
+        backgroundColor: [
+            'rgba(255, 99, 132, 0.2)',
+            'rgba(54, 162, 235, 0.2)',
+            'rgba(255, 206, 86, 0.2)',
+            'rgba(75, 192, 192, 0.2)',
+            'rgba(153, 102, 255, 0.2)',
+            'rgba(255, 159, 64, 0.2)'
+        ],
+        borderColor: [
+            'rgba(255, 99, 132, 1)',
+            'rgba(54, 162, 235, 1)',
+            'rgba(255, 206, 86, 1)',
+            'rgba(75, 192, 192, 1)',
+            'rgba(153, 102, 255, 1)',
+            'rgba(255, 159, 64, 1)'
+        ],
+        borderWidth: 1
+                }]
+            },
+        options: {
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+    });
+
+
+    // jquery function
+    $(document).ready(function () {
+        var ctx = document.getElementById('doughnutChart').getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: [{% for label in chart_data %}'{{label.customer__username}}',{% endfor %}],
+        datasets: [{
+            label: 'Total qty purchase of customers',
+            data: [{% for data in chart_data %}{{data.purchase_quantity}},{% endfor %}], 
+        backgroundColor: [
+            'rgba(255, 99, 132, 0.2)',
+            'rgba(54, 162, 235, 0.2)',
+            'rgba(255, 206, 86, 0.2)',
+            'rgba(75, 192, 192, 0.2)',
+            'rgba(153, 102, 255, 0.2)',
+            'rgba(255, 159, 64, 0.2)'
+        ],
+        borderColor: [
+            'rgba(255, 99, 132, 1)',
+            'rgba(54, 162, 235, 1)',
+            'rgba(255, 206, 86, 1)',
+            'rgba(75, 192, 192, 1)',
+            'rgba(153, 102, 255, 1)',
+            'rgba(255, 159, 64, 1)'
+        ],
+        borderWidth: 1
+                }]
+            },
+        options: {
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+    });
+
+    // jquery function
+    $(document).ready(function () {
+        var ctx = document.getElementById('radarChart').getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: [{% for label in chart_data %}'{{label.customer__username}}',{% endfor %}],
+        datasets: [{
+            label: 'Total qty',
+            data: [{% for data in chart_data %}{{data.purchase_quantity}},{% endfor %}], 
+        backgroundColor: [
+            'rgba(255, 99, 132, 0.2)',
+            'rgba(54, 162, 235, 0.2)',
+            'rgba(255, 206, 86, 0.2)',
+            'rgba(75, 192, 192, 0.2)',
+            'rgba(153, 102, 255, 0.2)',
+            'rgba(255, 159, 64, 0.2)'
+        ],
+        borderColor: [
+            'rgba(255, 99, 132, 1)',
+            'rgba(54, 162, 235, 1)',
+            'rgba(255, 206, 86, 1)',
+            'rgba(75, 192, 192, 1)',
+            'rgba(153, 102, 255, 1)',
+            'rgba(255, 159, 64, 1)'
+        ],
+        borderWidth: 1
+                },
+                {
+            label: 'Total orders',
+            data: [{% for data in chart_data %}{{data.order_count}},{% endfor %}], 
+        backgroundColor: [
+            'rgba(153, 102, 255, 0.2)',
+            'rgba(255, 99, 132, 0.2)',
+            'rgba(54, 162, 235, 0.2)',
+            'rgba(255, 206, 86, 0.2)',
+            'rgba(75, 192, 192, 0.2)',
+            'rgba(255, 159, 64, 0.2)'
+        ],
+        borderColor: [
+            'rgba(153, 102, 255, 1)',
+            'rgba(255, 99, 132, 1)',
+            'rgba(54, 162, 235, 1)',
+            'rgba(255, 206, 86, 1)',
+            'rgba(75, 192, 192, 1)',
+            'rgba(255, 159, 64, 1)'
+        ],
+        borderWidth: 1
+                }
+    
+        ]
+            },
+        options: {
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+    });
+
+    // jquery function
+    $(document).ready(function () {
+        var ctx = document.getElementById('pieChart').getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: [{% for label in chart_data %}'{{label.customer__username}}',{% endfor %}],
+        datasets: [{
+            label: 'Orders of customers',
+            data: [{% for data in chart_data %}{{data.order_count}},{% endfor %}], 
+        backgroundColor: [
+            'rgba(255, 99, 132, 0.2)',
+            'rgba(54, 162, 235, 0.2)',
+            'rgba(255, 206, 86, 0.2)',
+            'rgba(75, 192, 192, 0.2)',
+            'rgba(153, 102, 255, 0.2)',
+            'rgba(255, 159, 64, 0.2)'
+        ],
+        borderColor: [
+            'rgba(255, 99, 132, 1)',
+            'rgba(54, 162, 235, 1)',
+            'rgba(255, 206, 86, 1)',
+            'rgba(75, 192, 192, 1)',
+            'rgba(153, 102, 255, 1)',
+            'rgba(255, 159, 64, 1)'
+        ],
+        borderWidth: 1
+                }]
+            },
+        options: {
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+    });
+
+
+    // jquery function
+    $(document).ready(function () {
+        var ctx = document.getElementById('barChart').getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: [{% for label in barchart_data %}'{{label.created_at__date}}',{% endfor %}],
+        datasets: [{
+            label: 'Total orders',
+            data: [{% for data in barchart_data %}{{data.order_count}},{% endfor %}], 
+        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+        borderColor: 'rgba(75, 192, 192, 1)',
+        borderWidth: 1
+                },
+                {
+                label: 'Total qty',
+            data: [{% for data in barchart_data %}{{data.purchase_quantity}},{% endfor %}], 
+        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+        borderColor: 'rgba(255, 99, 132, 1)',
+        borderWidth: 1
+                },
+                {
+            label: 'Total price',
+            data: [{% for data in barchart_data %}{{data.purchase_price}},{% endfor %}], 
+        backgroundColor: 'rgba(153, 102, 255, 0.2)',
+        borderColor: 'rgba(153, 102, 255, 1)',
+        borderWidth: 1
+                }
+    
+        ]
+            },
+        options: {
+        scales: {
+            x: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+    });
+
+    // jquery function
+    $(document).ready(function () {
+        var ctx = document.getElementById('HbarChart').getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: [{% for label in barchart_data2 %}'{{label.created_at__month}}',{% endfor %}],
+        datasets: [{
+            label: 'Total orders',
+            data: [{% for data in barchart_data2 %}{{data.order_count}},{% endfor %}], 
+        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+        borderColor: 'rgba(75, 192, 192, 1)',
+        borderWidth: 1
+                },
+                {
+                label: 'Total qty',
+            data: [{% for data in barchart_data2 %}{{data.purchase_quantity}},{% endfor %}], 
+        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+        borderColor: 'rgba(255, 99, 132, 1)',
+        borderWidth: 1
+                },
+                {
+            label: 'Total price',
+            data: [{% for data in barchart_data2 %}{{data.purchase_price}},{% endfor %}], 
+        backgroundColor: 'rgba(153, 102, 255, 0.2)',
+        borderColor: 'rgba(153, 102, 255, 1)',
+        borderWidth: 1
+                }
+    
+        ]
+            },
+        options: {
+        scales: {
+            x: {
+                stacked: true
+            },
+            y: {
+                stacked: true
+            }
+        }
+    }
+});
+    });
+
+    // jquery function
+    $(document).ready(function () {
+        var ctx = document.getElementById('HVbarChart').getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: [{% for label in barchart_data3 %}'{{label.created_at__year}}',{% endfor %}],
+        datasets: [{
+            axis: 'y',
+            label: 'Total orders',
+            data: [{% for data in barchart_data3 %}{{data.order_count}},{% endfor %}], 
+        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+        borderColor: 'rgba(75, 192, 192, 1)',
+        borderWidth: 1
+                },
+                {
+            axis: 'y',
+            label: 'Total qty',
+            data: [{% for data in barchart_data3 %}{{data.purchase_quantity}},{% endfor %}], 
+        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+        borderColor: 'rgba(255, 99, 132, 1)',
+        borderWidth: 1
+                },
+                {
+            axis: 'y',
+            label: 'Total price',
+            data: [{% for data in barchart_data3 %}{{data.purchase_price}},{% endfor %}], 
+        backgroundColor: 'rgba(153, 102, 255, 0.2)',
+        borderColor: 'rgba(153, 102, 255, 1)',
+        borderWidth: 1
+                }
+    
+        ]
+            },
+        options: {
+        scales: {indexAxis: 'y'}
+    }
+});
+    });
+</script>
+
+
+{% endblock content %}

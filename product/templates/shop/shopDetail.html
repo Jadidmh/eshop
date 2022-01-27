@@ -1,0 +1,365 @@
+{% extends "base.html" %}
+
+<style>
+    .change-class {
+        justify-content: center !important;
+    }
+</style>
+
+{% block content %}
+
+<div class="row my-3 mx-1">
+    <div class="col-md-6 col-xl-4 h-auto mb-3">
+        <div class="card bg-warning text-dark text-center h-100">
+            <div class="card-body">
+                <h3 class="">
+                    {% if shop_count > 1 %}
+                    مجموع فروشگاه ها
+                    {% elif shop_count == 1 %}
+                    مجموع فروشگاه
+                    {% endif %}
+                </h3>
+                <h4 class="">
+                    {% if shop_count > 1 %}
+                    کل فروشگاه های موجود {{request.user.username}}
+                    {% elif shop_count == 1 %}
+                    کل فروشگاه موجود {{request.user.username}}
+                    {% endif %}
+                </h4>
+                <h5 class="">{{shop_count}}</h5>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-4 h-auto mb-3">
+        <div class="card bg-warning text-dark text-center h-100">
+            <div class="card-body">
+                <h3 class="">
+                    {% if active_shop_count > 1 %}
+                    فروشگاه های فعال
+                    {% else %}
+                    فروشگاه فعال
+                    {% endif %}
+                </h3>
+                <h4 class="">
+                    {% if active_shop_count > 1 %}
+                    کل فروشگاه های فعال {{request.user.username}}
+                    {% elif active_shop_count == 1 %}
+                    کل فروشگاه فعال {{request.user.username}}
+                    {% else %}
+                    هیچ فروشگاهی فعال نیست
+                    {% endif %}
+                </h4>
+                <h5 class="">{{active_shop_count}}</h5>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12 col-xl-4 h-auto mb-3">
+        <div class="card bg-warning text-dark text-center h-100">
+            <div class="card-body">
+                <h3 class="">
+                    {% if delete_shop_count > 1 %}
+                    فروشگاه های حذف شده
+                    {% else %}
+                    فروشگاه حذف شده
+                    {% endif %}
+                </h3>
+                <h4 class="">
+                    {% if delete_shop_count > 1 %}
+                    کل فروشگاه های حذف شده {{request.user.username}}
+                    {% elif delete_shop_count == 1 %}
+                    کل فروشگاه حذف شده {{request.user.username}}
+                    {% else %}
+                    هیچ فروشگاهی حذف نشده
+                    {% endif %}
+                </h4>
+                <h5 class="">{{delete_shop_count}}</h5>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="row bg-warning mx-1">
+    {% if shop %}
+    <div class="col-md-12 bg-warning">
+        <div class="table-responsive">
+            <table
+                class="align-middle mb-0 table table-borderless table-striped table-hover bg-warning text-dark text-center">
+                <thead>
+                    <tr>
+                        <th class="text-center">نام فروشگاه</th>
+                        <th class="text-center">نوع فروشگاه</th>
+                        <th class="text-center">تایید شده</th>
+                        <th class="text-center">حذف شده</th>
+                        <th class="text-center">جزئیات</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    {% for shop in shop_list %}
+                    <tr>
+                        <td class="text-center">{{ shop.name }}</td>
+                        <td class="text-center">
+                            {% if shop.type == "SU" %}
+                            سوپر مارکت
+                            {% elif shop.type == "HY" %}
+                            هایپر مارکت
+                            {% elif shop.type == "VS" %}
+                            فروشگاه سبزیجات
+                            {% elif shop.type == "FS" %}
+                            میوه فروشی
+                            {% elif shop.type == "OS" %}
+                            فروشگاه ارگانیک
+                            {% elif shop.type == "CS" %}
+                            خواربار فروشی
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            {% if shop.is_confirmed %}
+                            <span>&#10003;</span>
+                            {% else %}
+                            <span>&#10005; در حال بررسی</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            {% if shop.is_deleted %}
+                            <span>&#10003;</span>
+                            {% else %}
+                            <span>&#10005;</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center"><a href="{% url 'shopDetail' shop.slug %}"
+                                class="btn btn-dark text-warning">بیشتر</a></td>
+                        {% endfor %}
+
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+    {% endif %}
+</div>
+
+
+<div class="row my-3 mx-1">
+    <div class="col-md-6 col-xl-4 h-auto mb-3">
+        <div class="card bg-warning text-dark text-center h-100">
+            <div class="card-body">
+                <h3 class="">مجموع سفارشات</h3>
+                <h4 class=""> کل سفارشات فروشگاه {{shop.name}}</h4>
+                <h5 class=""><span>{{ order_count }}</span></h5>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-4 h-auto mb-3">
+        <div class="card bg-warning text-dark text-center h-100">
+            <div class="card-body">
+                <h3 class="">مشتری</h3>
+                <h4 class="">کل مشتری های فروشگاه {{shop.name}}</h4>
+                <h5 class=""><span>{{ client_count }}</span></h5>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12 col-xl-4 h-auto mb-3">
+        <div class="card bg-warning text-dark text-center h-100">
+            <div class="card-body">
+                <h3 class="">قیمت سفارشات</h3>
+                <h4 class="">قیمت کل سفارشات</h4>
+                <h5 class=""><span>{{ orders_value }} ریال</span></h5>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mx-1 my-3">
+    <div class="col-md-12 bg-warning">
+        <div class="card-header text-center text-dark h3 py-3"> سفارشات فروشگاه {{ shop.name }}
+        </div>
+        <div class="table-responsive">
+            <table
+                class="align-middle mb-0 table table-borderless table-striped table-hover bg-warning text-dark text-center">
+                <thead>
+                    <tr>
+                        <th class="text-center">ردیف</th>
+                        <th>مشتری</th>
+                        <th class="text-center">قیمت کل</th>
+                        <th class="text-center">مجموع تعداد</th>
+                        <th class="text-center">تخفیف</th>
+                        <th class="text-center">سفارش ایجاد شده در</th>
+                        <th class="text-center">سفارش به روز شده در</th>
+                        <th class="text-center">پرداخت شده است</th>
+                        <th class="text-center">وضعیت</th>
+                        <th class="text-center">ویرایش</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    {% for order in order_list %}
+                    <tr>
+                        <td class="">#{{ order.id }}</td>
+                        <td>
+                            <div class="widget-content p-0">
+                                <div class="widget-content-wrapper">
+                                    <div class="widget-content-left mr-3">
+                                        <div class="widget-content-left">
+                                            <img width="50" height="50" class="rounded-circle"
+                                                src="{{ order.client.image.url }}" alt="">
+                                        </div>
+                                    </div>
+                                    <div class="widget-content-left flex2">
+                                        <div class="widget-heading">
+                                            {{ order.client.username }}
+                                        </div>
+                                        <div class="widget-subheading opacity-7">
+                                            {{ order.client.phone }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="text-center">{{ order.shop_total_price }}</td>
+                        <td class="text-center">{{ order.shop_total_quantity }}</td>
+                        <td class="text-center">{{ order.discount }}</td>
+                        <td class="text-center">{{ order.created_at.date }}</td>
+                        <td class="text-center">{{ order.updated_at }}</td>
+                        <td class="text-center">
+                            {% if order.is_payment %}
+                            <span>&#10003;</span>
+                            {% else %}
+                            <span>&#10005;</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            {% if order.status == 'CO' %}
+                            <div class="">تایید شده</div>
+                            {% elif order.status == 'CH' %}
+                            <div class="">درحال بررسی</div>
+                            {% elif order.status == 'CA' %}
+                            <div class="">لغو شده</div>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            <a href="" type="button"
+                                id="PopoverCustomT-1" class="btn btn-dark text-warning btn-sm">ویرایش</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+
+                </tbody>
+            </table>
+        </div>
+        <div class="d-block text-center card-footer">
+            <a href="{% url 'order_list_url' shop.slug %}" class="btn btn-dark text-warning">
+                بیشتر
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row my-3 change-class mx-1">
+    <div class="col-md-6 col-xl-4 h-auto mb-3">
+        <div class="card bg-warning text-dark text-center h-100">
+            <div class="card-body">
+                <h3 class="">کل محصولات</h3>
+                <h4 class="">تعداد محصولات در فروشگاه {{ shop.name }}</h4>
+                <h5 class="">{{ product_count }}</h5>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-4 h-auto mb-3">
+        <div class="card bg-warning text-dark text-center h-100">
+            <div class="card-body">
+                <h3 class="">محصولات فعال</h3>
+                <h4 class="">تعداد محصولات قابل فروش در فروشگاه {{shop.name}}</h4>
+                <h5 class="">{{ active_product_count }}</h5>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12 col-xl-4 h-auto mb-3">
+        <div class="card bg-warning text-dark text-center h-100">
+            <div class="card-body">
+                <h3 class="">محصولات تایید شده</h3>
+                <h4 class="">تعداد محصولات تایید شده در فروشگاه {{shop.name}}</h4>
+                <h5 class="">{{ confirm_product_count }}</h5>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="row mx-1 my-3">
+    <div class="col-md-12 bg-warning">
+        <div class="card-header text-center text-dark h3 py-3">محصولات فروشگاه {{ shop.name }}
+
+        </div>
+        <div class="table-responsive">
+            <table
+                class="align-middle mb-0 table table-borderless table-striped table-hover bg-warning text-dark text-center mb-3">
+                <thead>
+                    <tr>
+                        <th class="text-center">ردیف</th>
+                        <th>نام محصول</th>
+                        <th class="text-center">تعداد</th>
+                        <th class="text-center">قیمت</th>
+                        <th class="text-center">تخفیف</th>
+                        <th class="text-center">قیمت نهایی</th>
+                        <th class="text-center">به روز شده در</th>
+                        <th class="text-center">فعال است</th>
+                        <th class="text-center">ویرایش</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    {% for product in product_list %}
+                    {% if product.is_confirmed %}
+                    <tr>
+                        <td class="">#{{ product.id }}</td>
+                        <td>
+                            <div class="widget-content p-0">
+                                <div class="widget-content-wrapper">
+                                    <div class="widget-content-left mr-3">
+                                        <div class="widget-content-left py-3">
+                                            <img width="50" height="50" class="" src="{{ product.image.url }}" alt="">
+                                        </div>
+                                    </div>
+                                    <div class="widget-content-left flex2">
+                                        <div class="widget-heading pb-3">نام محصول : {{ product.name }}</div>
+                                        <div class="widget-subheading opacity-7 pb-3">
+                                            از دسته بندی : {{ product.category }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="text-center">{{ product.stock }}</td>
+                        <td class="text-center">{{ product.price }}</td>
+                        <td class="text-center">{{ product.discount }}</td>
+                        <td class="text-center">{{ product.sales }}</td>
+                        <td class="text-center">{{ product.updated_at }}</td>
+                        <td class="text-center">
+                            {% if product.is_active %}
+                            <span>&#10003;</span>
+                            {% else %}
+                            <span>&#10005;</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            <a href="{% url 'editProduct' product.slug %}" id="PopoverCustomT-1"
+                                class="btn btn-dark text-warning btn-sm">ویرایش</a>
+                        </td>
+                    </tr>
+                    {% endif %}
+                    {% endfor %}
+
+                </tbody>
+            </table>
+        </div>
+        <div class="d-block text-center card-footer">
+            <a href="{% url 'createProduct' shop.slug %}" class="btn btn-dark text-warning">اضافه کردن
+                محصول</a>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

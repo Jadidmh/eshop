@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+
+<div class="row mx-1 my-3">
+    <div class="col-md-12 bg-warning">
+            {% for order in order_list %}
+            <div class="card-header text-center text-dark h3 py-3s">
+                جزئیات فروشگاه {{shop.name}} سفارش {{order.id}}
+            </div>
+
+
+            <div class="row my-3 mx-1">
+                <div class="col-md-6 col-xl-6 h-auto">
+                    <div class="bg-warning text-dark text-center h-100">
+                        <div class="card-body">
+                                 <div>نام کاربری : {{ order.client.username }}</div>
+                                 <div>ایمیل : {{ order.client.email }}</div>
+                                 <div>تلفن همراه : {{ order.client.phone }}</div>
+                                
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-xl-6 h-auto mb-3">
+                    <div class=" bg-warning text-dark text-center h-100">
+                        <div class="card-body">
+                            <div class=" col-12">
+                                <div class="widget-content-center mr-3">
+                                    <div class="widget-content-center">
+                                        وضعیت : 
+                                        {% if order.status == 'CO' %}
+                                        تایید شده
+                                        {% elif order.status == 'CH' %}
+                                        در حال بررسی
+                                        {% else %}
+                                        لغو شده
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="widget-content-center flex2">
+                                    <div class="widget-heading">
+                                        پرداخت
+                                        {% if order.is_payment %}
+                                        <span class="text-success">شده</span>
+                                        {% else %}
+                                        <span class="text-danger">نشده</span>
+                                        {% endif %}
+                                    </div>
+        
+                                     ایجاد شده در : {{ order.created_at.date }}
+                                </div>
+                                 به روز شده در : {{ order.updated_at }}
+                                 <div>
+                                    {% if not order.is_payment %}
+                                    <a href="{% url 'order_payment_url' slug=shop.slug pk=order.id %}"
+                                    class="btn btn-success my-3">پرداخت شد</a>
+                                    {% endif %}
+                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            <div class="table-responsive">
+                <table class="align-middle mb-0 table table-borderless table-striped table-hover">
+
+
+                    <thead>
+                        <tr>
+                            <th>نام محصول</th>
+                            <th class="text-center">قیمت واحد</th>
+                            <th class="text-center">تعداد</th>
+                            <th class="text-center">تخفیف</th>
+                            <th class="text-center">فروشگاه</th>
+                            <th class="text-center">مجموع قیمت</th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+
+
+                        {% for item in orderitem_list %}
+                        <tr>
+                            <td>
+                                <div class="widget-content p-0">
+                                    <div class="widget-content-wrapper">
+                                        <div class="widget-content-left mr-3">
+                                            <div class="widget-content-left">
+
+                                                <img width="60" height="65" class="" src="{{ item.product.image.url }}"
+                                                    alt="">
+
+                                            </div>
+                                        </div>
+                                        <div class="widget-content-left flex2">
+                                            <div class="widget-heading">
+                                                {{ item.product.name }}
+                                            </div>
+                                            <div class="widget-subheading opacity-7">
+                                                {{ item.product.category }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="text-center">{{ item.unit_price }}</td>
+                            <td class="text-center">{{ item.quantity }}</td>
+                            <td class="text-center">{{ item.discount }}</td>
+                            <td class="text-center">{{ item.product.shop.name }}</td>
+                            <td class="text-center"><b>{{ item.total_item_price }}</b></td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </div>
+                    <div class="d-block text-center card-footer">
+                        
+                        <tr>
+                            <td class="text-left"><b>نتایج نهایی</b></td>
+                            <td class="text-center">{{ shop_total_price }}</td>
+                            <td class="text-center">{{ shop_total_quantity }}</td>
+                            <td class="text-center">{{ a }}</td>
+                            <td class="text-center">-</td>
+                            <td class="text-center"><b>{{ shop_total_price }}</b></td>
+                        </tr>
+                    </tbody>
+                </table>
+                    {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock content %}

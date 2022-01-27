@@ -1,0 +1,134 @@
+{% load static %}
+<!doctype html>
+<html lang="en" dir="rtl">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css"
+    integrity="sha384-DyZ88mC6Up2uqS4h/KRgHuoeGwBcD4Ng9SiP4dIRy0EXTlnuz47vAwmeGwVChigm" crossorigin="anonymous" />
+    {% block extralink %}
+
+{% endblock extralink %}
+  <title>پنل کاربری {{request.user.username}}</title>
+</head>
+
+<body class="bg-dark">
+
+  <div class="container bg-dark">
+    <div class="row bg-warning my-3 mx-1">
+      <div class="col-md-6 col-xl-4 d-flex " style="justify-content: space-evenly;align-items: center;">
+       
+        <div class="d-flex flex-column text-center my-3">
+          <span class="d-block">نام کاربری : {{request.user.username}}</span>
+          <span class="d-block mt-2">شماره تلفن : {{ request.user.phone }}</span>
+          <span class="d-block mt-2">
+            <a href="" class="w3-bar-item w3-button text-dark btn btn-dark"><i class="fa fa-user text-warning"></i></a>
+            <a href="" class="w3-bar-item w3-button text-dark btn btn-dark"><i
+                class="fas fa-user-cog text-warning"></i></a>
+            <a href="{% url 'sellerLogout' %}" class="w3-bar-item w3-button text-dark btn btn-dark"><i
+                class="fas fa-power-off text-warning"></i></a>
+          </span>
+        </div>
+      </div>
+      <div class="col-md-6 col-xl-4 d-flex " style="justify-content: space-evenly;align-items: center;">
+        {% if messages %}
+        <div
+          class="messages p-0 m-0 bg-dark w-100 my-3 h-75 d-flex align-items-center justify-content-center rounded-pill">
+          {% for message in messages %}
+          <b class="text-center text-warning {% if message.tags %}text-{{ message.tags }}{% endif %} p-0 m-0">
+            {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}Important: {% endif %}
+            {{ request.user.username }}
+            {{ message }}
+          </b>
+          {% endfor %}
+        </div>
+        {% else %}
+        <div class="p-0 m-0 bg-dark w-100 my-3 h-75 d-flex align-items-center justify-content-center rounded-pill">
+          <h2 class="text-warning">خوش آمدی {{ request.user.username }}</h2>
+        </div>
+        {% endif %}
+      </div>
+      <div class="col-md-12 col-xl-4 d-flex" style="justify-content: space-evenly;align-items: center;">
+        <div class="d-flex flex-column my-3 w-100">
+          <span class="d-block mt-2"><a href="{% url 'order_chart_url' shop.slug %}" class="btn btn-dark text-warning w-100"><i
+            class="fas fa-clipboard ms-2"></i>گزارشات</a></span>
+          <span class="d-block mt-2"><a href="{% url 'createShop' %}" class="btn btn-dark text-warning w-100"><i
+                class="fas fa-shopping-cart ms-2"></i>ایجاد فروشگاه جدید</a></span>
+          <span class="d-block mt-2">
+            <span class="d-block"><a href="{% url 'createProduct' shop.slug %}" class="btn btn-dark text-warning w-100"><i
+                  class="fas fa-shopping-bag ms-2"></i>ایجاد محصول  جدید</a></span>
+          </span>
+        </div>
+      </div>
+      <div class="col-md-6 col-xl-4 ">
+        <h5 class="mt-3">{{shop.name}}
+          {% if shop.type == "SU" %}
+          سوپر مارکت
+          {% elif shop.type == "HY" %}
+          هایپر مارکت
+          {% elif shop.type == "VS" %}
+          فروشگاه سبزیجات
+          {% elif shop.type == "FS" %}
+          میوه فروشی
+          {% elif shop.type == "OS" %}
+          فروشگاه ارگانیک
+          {% elif shop.type == "CS" %}
+          خواربار فروشی
+          {% endif %}
+        </h5>
+        <h5 class="lh-1 lh-sm lh-base lh-lg">{{shop.address}}</h5>
+      </div>
+
+
+      <div class="col-md-6 col-xl-4 d-flex " style="justify-content: space-evenly;align-items: center;">
+        <div class="d-flex flex-column my-3 w-100">
+          {% if shop.is_confirmed %}
+          <span class="d-block"><a href="" class="btn btn-success w-100"><i class="fas fa-store-alt ms-2"></i>فروشگاه
+              {{shop.name}} فعال است</a></span>
+          {% else %}
+          <span class="d-block"><a href="" class="btn btn-dark w-100"><i class="fas fa-store-alt ms-2"></i>فروشگاه
+              {{shop.name}} فعال نیست</a></span>
+          {% endif %}
+          <span class="d-block mt-2"><a href="{% url 'editShop' shop.slug %}" class="btn btn-secondary w-100"><i
+                class="fas fa-edit ms-2"></i>ویرایش فروشگاه {{shop.name}}</a></span>
+          <span class="d-block mt-2">
+            <span class="d-block"><a href="{% url 'deleteShop' shop.slug %}" class="btn btn-danger w-100"><i class="fas fa-trash-alt ms-2"></i>حذف
+                فروشگاه {{shop.name}}</a></span>
+          </span>
+        </div>
+      </div>
+      <div class="col-md-12 col-xl-4 d-flex" style="justify-content: space-evenly;align-items: center;">
+        <div class="d-flex flex-column my-3 w-100">
+          <span class="d-block mt-2"><a href="{% url 'client_list_url' shop.slug %}" class="btn btn-dark text-warning w-100"><i
+                class="fa fa-user text-warning ms-2"></i>لیست مشتری ها </a></span>
+
+          <span class="d-block mt-2"><a href="{% url 'order_list_url' shop.slug %}" class="btn btn-dark text-warning w-100"><i
+                class="fas fa-shopping-cart ms-2"></i>لیست سفارشات {{shop.name}}</a></span>
+          <span class="d-block mt-2"><a href="{% url 'product_list_url' shop.slug %}" class="btn btn-dark text-warning w-100"><i
+                class="fas fa-shopping-bag ms-2"></i>لیست محصولات</a></span>
+        </div>
+      </div>
+
+    </div>
+
+
+    {% block content %}
+    {% endblock content %}
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"
+    integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"
+    integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF"
+    crossorigin="anonymous"></script>
+
+</body>
+
+</html>
